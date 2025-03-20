@@ -289,6 +289,8 @@ class SuGaR(nn.Module):
             
             self.fx = nerfmodel.training_cameras.fx[0].item()
             self.fy = nerfmodel.training_cameras.fy[0].item()
+            self.cx = nerfmodel.training_cameras.cx[0].item()
+            self.cy = nerfmodel.training_cameras.cy[0].item()
         else:
             self.image_height = 1080
             self.image_width = 1920
@@ -299,7 +301,10 @@ class SuGaR(nn.Module):
         self.fov_y = focal2fov(self.fy, self.image_height)
         self.tanfovx = math.tan(self.fov_x * 0.5)
         self.tanfovy = math.tan(self.fov_y * 0.5)
-        
+
+        self.cx = (self.cx - self.image_width) / self.image_width / 2
+        self.cy = (self.cy - self.image_height) / self.image_height / 2
+                
         if self.binded_to_surface_mesh and (not learn_surface_mesh_opacity):
             all_densities = inverse_sigmoid(0.9999 * torch.ones((n_points, 1), dtype=torch.float, device=points.device))
             self.learn_opacities = False
@@ -1463,7 +1468,8 @@ class SuGaR(nn.Module):
                 image_size=(self.image_height, self.image_width),
                 blur_radius=0.0, 
                 faces_per_pixel=faces_per_pixel,
-                max_faces_per_bin=max_faces_per_bin
+                max_faces_per_bin=max_faces_per_bin,
+                #bin_size=0
             )
             rasterizer = MeshRasterizer(
                     cameras=nerf_cameras.p3d_cameras[cam_idx], 
@@ -2197,7 +2203,9 @@ class SuGaR(nn.Module):
             p3d_camera.znear.item(), 
             p3d_camera.zfar.item(), 
             self.fov_x, 
-            self.fov_y).transpose(0, 1).cuda()
+            self.fov_y,
+            self.cx,
+            self.cy).transpose(0, 1).cuda()
         # TODO: THE TWO FOLLOWING LINES ARE IMPORTANT! IT'S NOT HERE IN 3DGS CODE! Should make a PR when I have time
         proj_transform[..., 2, 0] = - p3d_camera.K[0, 0, 2]
         proj_transform[..., 2, 1] = - p3d_camera.K[0, 1, 2]

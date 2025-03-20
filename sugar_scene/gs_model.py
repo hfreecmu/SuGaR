@@ -136,7 +136,7 @@ class GaussianSplattingWrapper:
             white_background=white_background,
             remove_indices=remove_camera_indices,
             )
-        
+                
         if eval_split:
             self.cam_list = []
             self.test_cam_list = []

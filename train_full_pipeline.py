@@ -130,6 +130,7 @@ if __name__ == "__main__":
         gs_checkpoint_dir = args.gs_output_dir
         if gs_checkpoint_dir[-1] != os.path.sep:
             gs_checkpoint_dir += os.path.sep
+    exit(0)
     
     # Runs the train.py python script with the given arguments
     os.system(
@@ -159,3 +160,5 @@ if __name__ == "__main__":
             --gpu {args.gpu} \
             --white_background {args.white_background}"
     )
+# python train_full_pipeline.py -s /home/hfreeman/harry_ws/repos/feature-3dgs/data/robot_pruners_colmap -r "density" --high_poly True --export_obj True
+# python3 gaussian_splatting/segment_splat.py --model_path /home/hfreeman/harry_ws/repos/SuGaR/output/vanilla_gs/mano_colmap/ --output_dir /home/hfreeman/harry_ws/repos/SuGaR/output/vanilla_gs/mano_colmap/

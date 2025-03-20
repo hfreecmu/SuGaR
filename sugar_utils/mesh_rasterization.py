@@ -29,6 +29,7 @@ class RasterizationSettings():
             image_size=image_size,
             blur_radius=blur_radius,
             faces_per_pixel=faces_per_pixel,
+            # bin_size=0 # I had this in
         )
 
 

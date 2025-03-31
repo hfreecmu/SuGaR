@@ -160,5 +160,5 @@ if __name__ == "__main__":
             --gpu {args.gpu} \
             --white_background {args.white_background}"
     )
-# python train_full_pipeline.py -s /home/hfreeman/harry_ws/repos/feature-3dgs/data/robot_pruners_colmap -r "density" --high_poly True --export_obj True
-# python3 gaussian_splatting/segment_splat.py --model_path /home/hfreeman/harry_ws/repos/SuGaR/output/vanilla_gs/mano_colmap/ --output_dir /home/hfreeman/harry_ws/repos/SuGaR/output/vanilla_gs/mano_colmap/
+# python train_full_pipeline.py -s /home/hfreeman/harry_ws/ycb/003_cracker_box/colmap -r "density" --high_poly True --export_obj True
+# python3 gaussian_splatting/segment_splat.py --model_path /home/hfreeman/harry_ws/repos/SuGaR/output/vanilla_gs/colmap --output_dir /home/hfreeman/harry_ws/repos/SuGaR/output/vanilla_gs/colmap

@@ -71,6 +71,7 @@ def getNerfppNorm(cam_info):
 
 def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, masks_folder):
     cam_infos = []
+    has_mask_print = False
     for idx, key in enumerate(cam_extrinsics):
         sys.stdout.write('\r')
         # the exact output you're looking for:
@@ -113,11 +114,16 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, masks_folde
         if not os.path.exists(mask_path):
             mask_path = os.path.join(masks_folder, image_name + '.jpg')
 
-        object_mask = np.array(copy.deepcopy(Image.open(mask_path)))
-        object_mask = object_mask.astype(float) / 255.0
-
         image = np.array(image)
-        image[object_mask == 0.0] = [0, 0, 0]
+
+        if os.path.exists(mask_path):
+            object_mask = np.array(copy.deepcopy(Image.open(mask_path)))
+            object_mask = object_mask.astype(float) / 255.0
+            image[object_mask == 0.0] = [0, 0, 0]
+        elif not has_mask_print:
+            print('Warning: no mask found')
+            has_mask_print = True
+
         image = copy.deepcopy(Image.fromarray(image))
 
         cam_info = CameraInfo(uid=uid, R=R, T=T, FovY=FovY, FovX=FovX, cx=cx, cy=cy, 

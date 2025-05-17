@@ -89,6 +89,12 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
 
         # Loss
         gt_image = viewpoint_cam.original_image.cuda()
+        gt_human_mask = viewpoint_cam.human_mask.cuda()
+
+        valid_pix = 1 - gt_human_mask
+        image = torch.where(valid_pix > 0, image, torch.zeros_like(gt_image))
+        gt_image = torch.where(valid_pix > 0, gt_image, torch.zeros_like(gt_image))
+
         Ll1 = l1_loss(image, gt_image)
         loss = (1.0 - opt.lambda_dssim) * Ll1 + opt.lambda_dssim * (1.0 - ssim(image, gt_image))
         loss.backward()

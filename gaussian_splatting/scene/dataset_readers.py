@@ -38,6 +38,7 @@ class CameraInfo(NamedTuple):
     image_name: str
     width: int
     height: int
+    human_mask: np.array
 
 class SceneInfo(NamedTuple):
     point_cloud: BasicPointCloud
@@ -69,7 +70,8 @@ def getNerfppNorm(cam_info):
 
     return {"translate": translate, "radius": radius}
 
-def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, masks_folder):
+def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, masks_folder,
+                      human_masks_folder):
     cam_infos = []
     has_mask_print = False
     for idx, key in enumerate(cam_extrinsics):
@@ -126,9 +128,17 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, masks_folde
 
         image = copy.deepcopy(Image.fromarray(image))
 
+        human_mask_path = os.path.join(human_masks_folder, image_name + '.png')
+        if os.path.exists(human_mask_path):
+            human_mask = copy.deepcopy(Image.open(human_mask_path))
+        else:
+            human_mask = None
+
         cam_info = CameraInfo(uid=uid, R=R, T=T, FovY=FovY, FovX=FovX, cx=cx, cy=cy, 
                               image=image,
-                              image_path=image_path, image_name=image_name, width=width, height=height)
+                              image_path=image_path, image_name=image_name, 
+                              width=width, height=height,
+                              human_mask=human_mask)
         cam_infos.append(cam_info)
     sys.stdout.write('\n')
     return cam_infos
@@ -172,8 +182,10 @@ def readColmapSceneInfo(path, images, eval, llffhold=8, max_images=None):
 
     reading_dir = "images" if images == None else images
     masks_dir = "masks"
+    human_masks_dir = "masks_human"
     cam_infos_unsorted = readColmapCameras(cam_extrinsics=cam_extrinsics, cam_intrinsics=cam_intrinsics, images_folder=os.path.join(path, reading_dir),
-                                           masks_folder=os.path.join(path, masks_dir))
+                                           masks_folder=os.path.join(path, masks_dir),
+                                           human_masks_folder=os.path.join(path, human_masks_dir))
     cam_infos = sorted(cam_infos_unsorted.copy(), key = lambda x : x.image_name)
 
     if max_images is not None and len(cam_infos) > max_images:
